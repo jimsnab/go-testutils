@@ -1,2 +1,4 @@
-github.com/jimsnab/go-simpleutils v1.0.11 h1:17tmrsEt0CI0ZPeOgstcvzxgeM9g2C9dG2+SjEX0G+0=
-github.com/jimsnab/go-simpleutils v1.0.11/go.mod h1:dZYo7pmxew3EWiGlGqGlvqNhbOXnFIdL4kgVR8aFNrY=
+github.com/djherbis/atime v1.1.0 h1:rgwVbP/5by8BvvjBNrbh64Qz33idKT3pSnMSJsxhi0g=
+github.com/djherbis/atime v1.1.0/go.mod h1:28OF6Y8s3NQWwacXc5eZTsEsiMzp7LF8MbXE+XJPdBE=
+github.com/jimsnab/go-simpleutils v1.0.12 h1:DdL/0OvpFHmDNbzaC1NnZNGvd3+l5akUQHBRbyQdhvM=
+github.com/jimsnab/go-simpleutils v1.0.12/go.mod h1:RudIoMHFP5s+x86U0VOX4Ij3aqDFDf+gxPGor8stRC4=
