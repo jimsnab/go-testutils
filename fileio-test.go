@@ -31,17 +31,37 @@ type TestFile struct {
 	perm os.FileMode
 	fi   os.FileInfo
 }
+
+type TestFileHook func(args ...string) error
+
 type TestFileIo struct {
 	files map[string]*TestFile
 	ForceError map[string]error
+	Hooks map[string]TestFileHook
 }
 
 func NewTestFileIo() *TestFileIo {
 	return &TestFileIo{files: make(map[string]*TestFile), ForceError: make(map[string]error)}
 }
 
-func (tfi *TestFileIo) getError(api string) error {
+func (tfi *TestFileIo) getError(api string, path ...string) error {
+	hook, exists := tfi.Hooks[api]
+	if exists {
+		err := hook(path...)
+		if err != nil {
+			return err
+		}
+	}
+
 	err, exists := tfi.ForceError[api]
+	if !exists {
+		for _,p := range path {
+			err, exists = tfi.ForceError[p]
+			if exists {
+				break
+			}
+		}
+	}
 	if exists {
 		delete(tfi.ForceError, api)
 		return err
@@ -50,7 +70,7 @@ func (tfi *TestFileIo) getError(api string) error {
 }
 
 func (tfi *TestFileIo) ReadFile(filePath string) ([]byte, error) {
-	err := tfi.getError("ReadFile")
+	err := tfi.getError("ReadFile", filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +83,7 @@ func (tfi *TestFileIo) ReadFile(filePath string) ([]byte, error) {
 }
 
 func (tfi *TestFileIo) WriteFile(filePath string, data []byte, perm fs.FileMode) error {
-	err := tfi.getError("WriteFile")
+	err := tfi.getError("WriteFile", filePath)
 	if err != nil {
 		return err
 	}
@@ -110,7 +130,7 @@ func (tfi *TestFileIo) WriteFile(filePath string, data []byte, perm fs.FileMode)
 }
 
 func (tfi *TestFileIo) Stat(name string) (os.FileInfo, error) {
-	err := tfi.getError("Stat")
+	err := tfi.getError("Stat", name)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +143,7 @@ func (tfi *TestFileIo) Stat(name string) (os.FileInfo, error) {
 }
 
 func (tfi *TestFileIo) MkdirAll(name string, perm fs.FileMode) error {
-	err := tfi.getError("MkdirAll")
+	err := tfi.getError("MkdirAll", name)
 	if err != nil {
 		return err
 	}
@@ -179,7 +199,7 @@ func (tfi *TestFileIo) IsEmptyDir(name string) bool {
 }
 
 func (tfi *TestFileIo) RemoveAll(name string) error {
-	err := tfi.getError("RemoveAll")
+	err := tfi.getError("RemoveAll", name)
 	if err != nil {
 		return err
 	}
@@ -199,7 +219,7 @@ func (tfi *TestFileIo) RemoveAll(name string) error {
 }
 
 func (tfi *TestFileIo) IsDirectory(name string) (bool, error) {
-	err := tfi.getError("IsDirectory")
+	err := tfi.getError("IsDirectory", name)
 	if err != nil {
 		return false, err
 	}
@@ -215,7 +235,7 @@ func (tfi *TestFileIo) IsDirectory(name string) (bool, error) {
 }
 
 func (tfi *TestFileIo) CopyFile(src, dest string) (int64, error) {
-	err := tfi.getError("CopyFile")
+	err := tfi.getError("CopyFile", src, dest)
 	if err != nil {
 		return 0, err
 	}
@@ -250,7 +270,7 @@ func (tfi *TestFileIo) CopyFile(src, dest string) (int64, error) {
 }
 
 func (tfi *TestFileIo) ReadDir(src string) (files []fs.DirEntry, err error) {
-	err = tfi.getError("ReadDir")
+	err = tfi.getError("ReadDir", src)
 	if err != nil {
 		return
 	}
@@ -267,7 +287,7 @@ func (tfi *TestFileIo) ReadDir(src string) (files []fs.DirEntry, err error) {
 }
 
 func (tfi *TestFileIo) FileExists(name string) (bool, error) {
-	err := tfi.getError("FileExists")
+	err := tfi.getError("FileExists", name)
 	if err != nil {
 		return false, err
 	}
