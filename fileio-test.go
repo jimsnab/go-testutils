@@ -41,7 +41,11 @@ type TestFileIo struct {
 }
 
 func NewTestFileIo() *TestFileIo {
-	return &TestFileIo{files: make(map[string]*TestFile), ForceError: make(map[string]error)}
+	return &TestFileIo{
+		files: make(map[string]*TestFile),
+		ForceError: make(map[string]error),
+		Hooks: make(map[string]TestFileHook),
+	}
 }
 
 func (tfi *TestFileIo) getError(api string, path ...string) error {
