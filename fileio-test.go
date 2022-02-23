@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -303,6 +304,55 @@ func (tfi *TestFileIo) FileExists(name string) (bool, error) {
 	return true, nil
 }
 
+func (tfi *TestFileIo) Walk(root string, fn filepath.WalkFunc) (err error) {
+	err = tfi.getError("Walk", root)
+	if err != nil {
+		return
+	}
+
+	cleanRoot := path.Clean(root)
+
+	tf, exists := tfi.files[cleanRoot]
+	if exists {
+		err = fn(cleanRoot, tf.fi, nil)
+		if err != nil {
+			if errors.Is(err, filepath.SkipDir) {
+				err = nil
+			}
+			return
+		}
+
+		dirSlash := cleanRoot + "/"
+		for file, tf := range tfi.files {
+			if strings.HasPrefix(file, dirSlash) {
+				if !strings.Contains(file[len(dirSlash):], "/") {
+					// found a file or subdirectory within root (but not a subpath)
+					err = tfi.getError("Walk", file)
+					if err != nil {
+						return
+					}
+					if tf.fi.IsDir() {
+						// subdirectory - recurse
+						if err = tfi.Walk(file, fn); err != nil {
+							return
+						}
+					} else {
+						// file
+						err = fn(cleanRoot, tf.fi, nil)
+						if err != nil {
+							if errors.Is(err, filepath.SkipDir) {
+								err = nil
+							}
+							return
+						}
+					}
+				}
+			}
+		}	
+	}
+	return
+}
+
 func (tfi *TestFileIo) Dump() {
 	keys := make([]string, 0, len(tfi.files))
 	for k := range tfi.files {
@@ -320,3 +370,4 @@ func (tfi *TestFileIo) Dump() {
 		}
 	}
 }
+

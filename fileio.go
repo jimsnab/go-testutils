@@ -3,6 +3,7 @@ package testutils
 import (
 	"io/fs"
 	"os"
+	"path/filepath"
 
 	"github.com/jimsnab/go-simpleutils"
 )
@@ -17,6 +18,7 @@ type FileIo interface {
 	CopyFile(src, dest string) (int64, error)
 	ReadDir(src string) ([]fs.DirEntry, error)
 	FileExists(name string) (bool, error)
+	Walk(root string, fn filepath.WalkFunc) error
 }
 
 type realFileIo struct {
@@ -70,4 +72,8 @@ func (rfi *realFileIo) ReadDir(src string) (files []fs.DirEntry, err error) {
 
 func (rfi *realFileIo) FileExists(name string) (bool, error) {
 	return simpleutils.FileExists(name)
+}
+
+func (rfi *realFileIo) Walk(root string, fn filepath.WalkFunc) error {
+	return filepath.Walk(root, fn)
 }
