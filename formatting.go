@@ -24,18 +24,18 @@ func NiceYaml(testYaml string) string {
 
 	var sb strings.Builder
 	col := 0
-	for _,ch := range testYaml {
+	for _, ch := range testYaml {
 		if ch == '\n' {
 			col = 0
 		} else if ch == '\t' {
 			sb.WriteRune(' ')
 			col++
-			for col % tabStop != 0 {
+			for col%tabStop != 0 {
 				sb.WriteRune(' ')
 				col++
 			}
 			continue
-		} else if (ch < 32) {
+		} else if ch < 32 {
 			continue
 		} else {
 			col++
@@ -47,7 +47,7 @@ func NiceYaml(testYaml string) string {
 	maxSpaces := len(testYaml)
 
 	lines := strings.Split(testYaml, "\n")
-	for _,line := range lines {
+	for _, line := range lines {
 		if len(line) > 0 {
 			spaces := 0
 			for spaces < len(line) && line[spaces] == ' ' {

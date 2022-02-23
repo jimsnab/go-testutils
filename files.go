@@ -9,7 +9,7 @@ import (
 
 func ExpectFileExists(io FileIo, t *testing.T, filePath string) {
 	t.Helper()
-	
+
 	fi, err := io.Stat(filePath)
 	ExpectError(t, nil, err)
 	ExpectBool(t, false, fi.IsDir())
@@ -48,7 +48,7 @@ func isDataStored(context string, allData interface{}, part interface{}) bool {
 			fmt.Printf("%s array lengths are different\n", context)
 			return false
 		}
-		for pos,item := range val {
+		for pos, item := range val {
 			if !isDataStored(fmt.Sprintf("%s[%d]", context, pos), allArray[pos], item) {
 				return false
 			}
@@ -57,7 +57,7 @@ func isDataStored(context string, allData interface{}, part interface{}) bool {
 
 	case map[string]interface{}:
 		allMap := allData.(map[string]interface{})
-		for k,v := range val {
+		for k, v := range val {
 			allV, exist := allMap[k]
 			if !exist || !isDataStored(fmt.Sprintf("%s.%s", context, k), allV, v) {
 				return false

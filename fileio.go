@@ -71,4 +71,3 @@ func (rfi *realFileIo) ReadDir(src string) (files []fs.DirEntry, err error) {
 func (rfi *realFileIo) FileExists(name string) (bool, error) {
 	return simpleutils.FileExists(name)
 }
-

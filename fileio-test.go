@@ -35,16 +35,16 @@ type TestFile struct {
 type TestFileHook func(args ...string) error
 
 type TestFileIo struct {
-	files map[string]*TestFile
+	files      map[string]*TestFile
 	ForceError map[string]error
-	Hooks map[string]TestFileHook
+	Hooks      map[string]TestFileHook
 }
 
 func NewTestFileIo() *TestFileIo {
 	return &TestFileIo{
-		files: make(map[string]*TestFile),
+		files:      make(map[string]*TestFile),
 		ForceError: make(map[string]error),
-		Hooks: make(map[string]TestFileHook),
+		Hooks:      make(map[string]TestFileHook),
 	}
 }
 
@@ -59,7 +59,7 @@ func (tfi *TestFileIo) getError(api string, path ...string) error {
 
 	err, exists := tfi.ForceError[api]
 	if !exists {
-		for _,p := range path {
+		for _, p := range path {
 			err, exists = tfi.ForceError[p]
 			if exists {
 				break
@@ -281,7 +281,7 @@ func (tfi *TestFileIo) ReadDir(src string) (files []fs.DirEntry, err error) {
 
 	dirSlash := path.Clean(src) + "/"
 
-	for file,tf := range tfi.files {
+	for file, tf := range tfi.files {
 		if strings.HasPrefix(file, dirSlash) {
 			files = append(files, fs.FileInfoToDirEntry(tf.fi))
 		}
@@ -320,4 +320,3 @@ func (tfi *TestFileIo) Dump() {
 		}
 	}
 }
-
