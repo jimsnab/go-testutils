@@ -15,6 +15,13 @@ func ExpectFileExists(io FileIo, t *testing.T, filePath string) {
 	ExpectBool(t, false, fi.IsDir())
 }
 
+func ExpectFileNotExists(io FileIo, t *testing.T, filePath string) {
+	t.Helper()
+
+	fi, _ := io.Stat(filePath)
+	ExpectValue(t, nil, fi)
+}
+
 func ExpectFileJson(io FileIo, t *testing.T, filePath string, data map[string]interface{}) {
 	t.Helper()
 
