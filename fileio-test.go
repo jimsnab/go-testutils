@@ -338,7 +338,7 @@ func (tfi *TestFileIo) Walk(root string, fn filepath.WalkFunc) (err error) {
 						}
 					} else {
 						// file
-						err = fn(cleanRoot, tf.fi, nil)
+						err = fn(file, tf.fi, nil)
 						if err != nil {
 							if errors.Is(err, filepath.SkipDir) {
 								err = nil
