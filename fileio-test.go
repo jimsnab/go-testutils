@@ -353,6 +353,28 @@ func (tfi *TestFileIo) Walk(root string, fn filepath.WalkFunc) (err error) {
 	return
 }
 
+func (tfi *TestFileIo) Chtimes(name string, atime, mtime time.Time) error {
+	err := tfi.getError("Chtimes", name)
+	if err != nil {
+		return err
+	}
+
+	tf, exist := tfi.files[name]
+	if !exist {
+		return os.ErrNotExist
+	}
+
+	tf.fi = &TestFileInfo{
+		name:    tf.fi.Name(),
+		size:    tf.fi.Size(),
+		mode:    tf.fi.Mode(),
+		modTime: mtime,
+		isDir:   tf.fi.IsDir(),
+	}
+
+	return nil
+}
+
 func (tfi *TestFileIo) Dump() {
 	keys := make([]string, 0, len(tfi.files))
 	for k := range tfi.files {

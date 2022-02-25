@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/jimsnab/go-simpleutils"
 )
@@ -19,6 +20,7 @@ type FileIo interface {
 	ReadDir(src string) ([]fs.DirEntry, error)
 	FileExists(name string) (bool, error)
 	Walk(root string, fn filepath.WalkFunc) error
+	Chtimes(name string, atime, mtime time.Time) error
 }
 
 type realFileIo struct {
@@ -76,4 +78,8 @@ func (rfi *realFileIo) FileExists(name string) (bool, error) {
 
 func (rfi *realFileIo) Walk(root string, fn filepath.WalkFunc) error {
 	return filepath.Walk(root, fn)
+}
+
+func (rfi *realFileIo) Chtimes(name string, atime, mtime time.Time) error {
+	return os.Chtimes(name, atime, mtime)
 }
